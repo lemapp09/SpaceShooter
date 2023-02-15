@@ -10,10 +10,14 @@ public class Enemy : MonoBehaviour
         private float _speed = 4f;
     #endregion
 
-    void Update()
+    private void Update()
+    {
+        MoveEnemyBeyondGameScreen();
+    }
+
+    private void FixedUpdate()
     {
         EnemyMovement();
-        MoveEnemyBeyondGameScreen();
     }
 
     private void EnemyMovement()
