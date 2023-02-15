@@ -2,12 +2,11 @@ using System;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Tarodev;
 using UnityEditor;
 using UnityEditor.SceneManagement;
 using UnityEngine;
 
-
+namespace Tarodev {
     /// <summary>
     /// Unity has probably discussed an auto-save feature countless times over the years
     /// and decided not to implement... so take that information as you'd like. I personally
@@ -88,3 +87,4 @@ using UnityEngine;
             EditorGUILayout.HelpBox("You can move this asset where ever you'd like.\nWith ❤, Tarodev.", MessageType.Info);
         }
     }
+}
