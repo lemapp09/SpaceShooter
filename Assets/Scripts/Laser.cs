@@ -16,11 +16,8 @@ public class Laser : MonoBehaviour
         _player = FindObjectOfType<Player>().GetComponent<Player>();
     }
 
-    private void FixedUpdate() {
-        transform.Translate(Time.deltaTime * _speed * Vector3.up);
-    }
-
     private void Update() {
+        transform.Translate(Time.deltaTime * _speed * Vector3.up);
         RemoveLaserBeyondGameScreen();
     }
 

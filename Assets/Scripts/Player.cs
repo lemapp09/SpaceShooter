@@ -1,5 +1,7 @@
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 public class Player : MonoBehaviour
 {
@@ -9,13 +11,23 @@ public class Player : MonoBehaviour
         [SerializeField]
         private GameObject _laserPrefab;
         [SerializeField]
+        private GameObject _tripleShotPrefab;
+        [SerializeField]
         private Transform _laserPoolContainer;
         [SerializeField]
-        private Vector2 _laserLaunchOffset = new Vector3(0f, 0.8f, 0f);
+        private Vector3 _laserLaunchOffset = new Vector3(0f, 0.8f, 0f);
+        [SerializeField]
+        private Vector3 _leftTripleOffset = new Vector3(-0.622f, -0.156f, 0f);
+        [SerializeField]
+        private Vector3 _rightTripleOffset = new Vector3(0.622f, -0.156f, 0f);
         [SerializeField] 
         private float _laserFireRate = 0.15f;
         [SerializeField]
         private int _lives = 3;
+        [SerializeField]
+        private bool _isTripleShotActive = true;
+        [SerializeField]
+        private float _timePrizesLast = 5f;
 
         private Vector3 _inputDirection;
         private float _horizontalBounds = 9.5f;
@@ -23,7 +35,8 @@ public class Player : MonoBehaviour
         private List<GameObject> _laserPool = new List<GameObject>();
         private float _laserNextFire = -1f;
         private SpawnManager _spawnManager;
-    #endregion
+
+        #endregion
     
     void Start() {            
          _spawnManager = FindObjectOfType<SpawnManager>();
@@ -37,9 +50,6 @@ public class Player : MonoBehaviour
     void Update() {
         CaptureInputs();
         PlayerInBounds();
-    }
-
-    private void FixedUpdate() {
         transform.Translate(_speed * Time.deltaTime * _inputDirection );
     }
 
@@ -49,6 +59,7 @@ public class Player : MonoBehaviour
         _inputDirection = new Vector3(horizontalInput, verticalInput, 0);
 
         // If both a vertical and a horizontal key are pressed together, space is ignored
+        // ↑→ works, ↑← fails, ↓→ fails, ↓→ fails
         if (Input.GetKeyDown(KeyCode.Space) && Time.time > _laserNextFire )
         {
             _laserNextFire = Time.time + _laserFireRate;
@@ -57,9 +68,12 @@ public class Player : MonoBehaviour
     }
 
     private void FireLaser() {
-        GameObject laser = RetrieveLaserFromPool();
-        laser.transform.position = transform.position + new Vector3(_laserLaunchOffset.x, _laserLaunchOffset.y, 0);
-        laser.SetActive(true);
+        RetrieveLaserFromPool().transform.position = transform.position + _laserLaunchOffset;
+        if (_isTripleShotActive)
+        {
+            RetrieveLaserFromPool().transform.position = transform.position + _leftTripleOffset;
+            RetrieveLaserFromPool().transform.position = transform.position + _rightTripleOffset;
+        }
     }
 
     private void PlayerInBounds() {
@@ -90,7 +104,20 @@ public class Player : MonoBehaviour
             Destroy(this.gameObject);
         }
     }
+
+    public void Awards(int awardNumber)
+    {
+        if (awardNumber == 1)
+            _isTripleShotActive = true;
+        StartCoroutine(TripleShotCountDown());
+    }
     
+    IEnumerator TripleShotCountDown()
+    {
+        yield return new WaitForSeconds(_timePrizesLast);
+        _isTripleShotActive = false;
+    }
+
     #region LaserPool
     private void PrePopulateLaserPool()  {
         for (int i = 0; i < 40; i++)

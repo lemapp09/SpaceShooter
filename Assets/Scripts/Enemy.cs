@@ -1,4 +1,5 @@
 using System;
+using Unity.VisualScripting;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
@@ -13,10 +14,6 @@ public class Enemy : MonoBehaviour
     private void Update()
     {
         MoveEnemyBeyondGameScreen();
-    }
-
-    private void FixedUpdate()
-    {
         EnemyMovement();
     }
 
@@ -41,7 +38,7 @@ public class Enemy : MonoBehaviour
             if (player != null) {
                 other.transform.GetComponent<Player>().Damage();
             }
-            ReturnEnemyToPool();
+            Destroy(this.GameObject());
         }
 
         if (other.transform.CompareTag("Laser")) {
@@ -49,15 +46,8 @@ public class Enemy : MonoBehaviour
             if (laser != null) {
                 other.transform.GetComponent<Laser>().ReturnToPool();
             }
-            ReturnEnemyToPool();
+            Destroy(this.GameObject());
         }
     }
 
-    private void ReturnEnemyToPool()
-    {
-        SpawnManager spawnManager = FindObjectOfType<SpawnManager>();
-        if (spawnManager != null) {
-            spawnManager.ReturnEnemyPrefabToPool(this.gameObject);
-        }
-    }
 }
