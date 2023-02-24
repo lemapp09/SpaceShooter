@@ -276,7 +276,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &65315011
 RectTransform:
   m_ObjectHideFlags: 0
@@ -936,7 +936,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a398741e3361c496f82cd956d4ffed63, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _initialWelcomeScreen: {fileID: 0}
   _inputsScreen: {fileID: 262049962}
   _noLives: {fileID: 1651705446}
   _oneLife: {fileID: 134138179}
@@ -1211,7 +1210,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 543216176}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
   m_Name: 
@@ -2764,7 +2763,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1955191193}
   m_LocalRotation: {x: 0.18494841, y: 0.3796976, z: -0.90309316, w: 0.07775987}
-  m_LocalPosition: {x: 2138.655, y: 136.28488, z: 140.02551}
+  m_LocalPosition: {x: 0, y: 0, z: 140.02551}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []

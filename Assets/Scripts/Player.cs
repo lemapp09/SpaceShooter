@@ -78,12 +78,10 @@ public class Player : MonoBehaviour
     
     void Start()
     {
-         this.GetComponent<SpriteRenderer>().enabled = false;
          if ( _spawnManager == null) {
              Debug.LogError("the Spawn Manager is NUll.");
          }
-         _spawnManager.StartSpawning();
-         
+         StartCoroutine(DelayStartSpawn());
          transform.position = new Vector3( 0, 0, 0 );
          PrePopulateLaserPool();
          _shieldPrefab.SetActive(false);
@@ -192,9 +190,9 @@ public class Player : MonoBehaviour
         }       
     }
 
-    public void EnemyKill()
+    public void EnemyKill(int score)
     {
-        _score += 10;
+        _score += score;
         _uiManager.UpdateScore(_score);
     }
 
@@ -226,6 +224,11 @@ public class Player : MonoBehaviour
     }
 
 
+    IEnumerator DelayStartSpawn() {
+        yield return new WaitForSeconds(5f);
+        _spawnManager.StartSpawning();
+    }
+    
     #region LaserPool
     private void PrePopulateLaserPool()  {
         for (int i = 0; i < 40; i++)
