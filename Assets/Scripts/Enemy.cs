@@ -1,4 +1,3 @@
-using System;
 using Unity.VisualScripting;
 using UnityEngine;
 using Random = UnityEngine.Random;
@@ -9,8 +8,16 @@ public class Enemy : MonoBehaviour
         private float _horizontalBounds = 9.5f;
         private float _verticalBounds = 5.5f;
         private float _speed = 4f;
+        private Player _player;
     #endregion
-
+    
+    private void Start() {
+        _player = GameObject.FindWithTag("Player").GetComponent<Player>();
+        if (_player == null) {
+            Debug.Log("Player reference in Power-Up is null.");
+        }
+    }
+    
     private void Update()
     {
         MoveEnemyBeyondGameScreen();
@@ -46,6 +53,7 @@ public class Enemy : MonoBehaviour
             if (laser != null) {
                 other.transform.GetComponent<Laser>().ReturnToPool();
             }
+            _player.EnemyKill();
             Destroy(this.GameObject());
         }
     }

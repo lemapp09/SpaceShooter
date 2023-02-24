@@ -1,17 +1,24 @@
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
-using UnityEngine.Serialization;
 
 public class Player : MonoBehaviour
 {
     #region Parameters
+        [Header("Speed")]
         [SerializeField]
         private float _speed = 5.0f;
         [SerializeField]
-        private GameObject _laserPrefab;
+        [Tooltip("The magnitude that speed increases when" +
+                 "player is awarded speed boost")]
+        // Initial requested speed was 8.5 (later 10)
+        private float _speedBoostFactor = 1.7f;
+        private float _speedUpFactor = 1.0f;
+        
+        [Header("Lasers")]
         [SerializeField]
-        private GameObject _tripleShotPrefab;
+        private GameObject _laserPrefab;
         [SerializeField]
         private Transform _laserPoolContainer;
         [SerializeField]
@@ -22,10 +29,28 @@ public class Player : MonoBehaviour
         private Vector3 _rightTripleOffset = new Vector3(0.622f, -0.156f, 0f);
         [SerializeField] 
         private float _laserFireRate = 0.15f;
+
+        [Header("Shield")] 
+        [SerializeField] 
+        private GameObject _shieldPrefab;
+        [SerializeField] 
+        private int _shieldHits;
+
+        [Header("Thrusters")] 
+        [SerializeField] 
+        private GameObject _thrustersPreFab;
+        
+        [Header("Lives")]
         [SerializeField]
         private int _lives = 3;
+        
+        [Header("Prizes")]
         [SerializeField]
         private bool _isTripleShotActive = true;
+        [SerializeField]
+        private bool _isSpeedBoostActive;
+        [SerializeField]
+        private bool _isShieldActive;
         [SerializeField]
         private float _timePrizesLast = 5f;
 
@@ -34,23 +59,42 @@ public class Player : MonoBehaviour
         private float _verticalBounds = 5.5f;
         private List<GameObject> _laserPool = new List<GameObject>();
         private float _laserNextFire = -1f;
-        private SpawnManager _spawnManager;
 
+        [Header("Player")] 
+        [SerializeField]
+        private GameObject _platerHurtLeft;
+        [SerializeField]
+        private GameObject _platerHurtRight;
+
+        [Header("UI Manager")] [SerializeField]
+        private UIManager _uiManager;
+        private int _score;
+        private bool _toggleInputsScreen;
+
+        [Header("Spawn Manager")] 
+        [SerializeField]
+        private SpawnManager _spawnManager;
         #endregion
     
-    void Start() {            
-         _spawnManager = FindObjectOfType<SpawnManager>();
-         if (_spawnManager == null) {
+    void Start()
+    {
+         this.GetComponent<SpriteRenderer>().enabled = false;
+         if ( _spawnManager == null) {
              Debug.LogError("the Spawn Manager is NUll.");
          }
+         _spawnManager.StartSpawning();
+         
          transform.position = new Vector3( 0, 0, 0 );
          PrePopulateLaserPool();
+         _shieldPrefab.SetActive(false);
+         _platerHurtLeft.SetActive(false);
+         _platerHurtRight.SetActive(false);
     }
 
     void Update() {
         CaptureInputs();
         PlayerInBounds();
-        transform.Translate(_speed * Time.deltaTime * _inputDirection );
+        transform.Translate(_speed * _speedUpFactor * Time.deltaTime * _inputDirection );
     }
 
     private void CaptureInputs() {
@@ -64,6 +108,11 @@ public class Player : MonoBehaviour
         {
             _laserNextFire = Time.time + _laserFireRate;
             FireLaser();
+        }
+
+        if (Input.GetKeyDown(KeyCode.Tab)) {
+            _uiManager.ToggleInputScreen(_toggleInputsScreen);
+            _toggleInputsScreen = !_toggleInputsScreen;
         }
     }
 
@@ -98,25 +147,84 @@ public class Player : MonoBehaviour
     }
 
     public void Damage() {
-        _lives--;
+        if (!_isShieldActive)  {
+            _lives--;
+            _uiManager.UpdateLives(_lives);
+        }
+        else {
+            _shieldHits++;
+            if (_shieldHits > 3) {
+                _isShieldActive = false;
+                _shieldPrefab.SetActive(false);
+                _shieldHits = 0;
+            }
+        }
+        
         if (_lives < 1) {
             _spawnManager.OnPlayerDeath();
+            _uiManager.GameOver();
             Destroy(this.gameObject);
         }
     }
 
     public void Awards(int awardNumber)
     {
-        if (awardNumber == 1)
-            _isTripleShotActive = true;
-        StartCoroutine(TripleShotCountDown());
+        // 0 - Triple Shot, 1 - Speed Power-Up, 2 - Shields
+        switch (awardNumber)  {
+            case 0:
+                if (!_isTripleShotActive) {
+                    StartCoroutine(TripleShotPowerDownRoutine());
+                }
+                break;
+            case 1:
+                if (!_isSpeedBoostActive) {
+                    StartCoroutine(SpeedBoostPowerDownRoutine());
+                }
+                break;
+            case 2:
+                if (!_isShieldActive) {
+                    StartCoroutine(ShieldBoostPowerDownRoutine());
+                }
+                break;
+            default:
+                Debug.Log("Default Award trigger in Player award");
+                break;
+        }       
     }
-    
-    IEnumerator TripleShotCountDown()
+
+    public void EnemyKill()
     {
+        _score += 10;
+        _uiManager.UpdateScore(_score);
+    }
+
+    IEnumerator TripleShotPowerDownRoutine()
+    {
+        _isTripleShotActive = true;
         yield return new WaitForSeconds(_timePrizesLast);
         _isTripleShotActive = false;
     }
+    
+    IEnumerator SpeedBoostPowerDownRoutine()
+    {
+        _isSpeedBoostActive = true;
+        _speedUpFactor = _speedBoostFactor;
+        yield return new WaitForSeconds(_timePrizesLast);
+        _speedUpFactor = 1.0f;
+        _isSpeedBoostActive = false;
+    }
+    
+    IEnumerator ShieldBoostPowerDownRoutine()
+    {
+        _shieldHits = 0;
+        _isShieldActive = true;
+        _shieldPrefab.SetActive(true);
+        yield return new WaitForSeconds(_timePrizesLast);
+        _shieldPrefab.SetActive(false);
+        _isShieldActive = false;
+        _shieldHits = 0;
+    }
+
 
     #region LaserPool
     private void PrePopulateLaserPool()  {
