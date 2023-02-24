@@ -81,8 +81,7 @@ public class Player : MonoBehaviour
          if ( _spawnManager == null) {
              Debug.LogError("the Spawn Manager is NUll.");
          }
-         StartCoroutine(DelayStartSpawn());
-         transform.position = new Vector3( 0, 0, 0 );
+         transform.position = new Vector3( 0, -4, 0 );
          PrePopulateLaserPool();
          _shieldPrefab.SetActive(false);
          _platerHurtLeft.SetActive(false);
@@ -222,12 +221,7 @@ public class Player : MonoBehaviour
         _isShieldActive = false;
         _shieldHits = 0;
     }
-
-
-    IEnumerator DelayStartSpawn() {
-        yield return new WaitForSeconds(5f);
-        _spawnManager.StartSpawning();
-    }
+    
     
     #region LaserPool
     private void PrePopulateLaserPool()  {
