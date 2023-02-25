@@ -15,6 +15,13 @@ public class Asteroid : MonoBehaviour
     [SerializeField]
     private GameObject _explosion;
     
+    [Header("Audio Clips")]
+    [SerializeField]
+    private AudioClip _explosionSoundClip;
+    [SerializeField]
+    private AudioSource _audioSource;
+
+    
     #endregion
     private void Start()
     {
@@ -69,9 +76,22 @@ public class Asteroid : MonoBehaviour
     IEnumerator DeathSequence() {
         _isDead = true;
         this.GetComponent<SpriteRenderer>().enabled = false;
+        _audioSource.clip = _explosionSoundClip;
+        _audioSource.Play();
         _explosion.SetActive(true);
         yield return new WaitForSeconds(2.633f);
-        Destroy(this.GameObject());
         _spawnManager.StartSpawning();
+        DestroyChildrenGameObjects();
+        Destroy(this.GameObject());
+    }
+    
+    private void DestroyChildrenGameObjects()
+    {
+        Transform[] children = transform.GetComponentsInChildren<Transform>();
+        foreach (Transform child in children) {
+            if (child != transform) {
+                Destroy(child.gameObject);
+            }
+        }
     }
 }

@@ -18,6 +18,14 @@ public class PowerUp : MonoBehaviour
        private float _horizontalBounds = 9.5f;
        private float _verticalBounds = 5.5f;
        private Player _player;
+       
+       [Header("Audio Clips")]
+       [SerializeField]
+       private AudioSource _audioSource;
+       [SerializeField]
+       private AudioClip _explosionSoundClip;
+       [SerializeField]
+       private AudioClip _powerupSoundClip;
 
     #endregion
 
@@ -76,7 +84,23 @@ public class PowerUp : MonoBehaviour
         _isDead = true;
         this.GetComponent<SpriteRenderer>().enabled = false;
         _explosion.SetActive(true);
-        yield return new WaitForSeconds(2.633f);
+        _audioSource.clip = _powerupSoundClip;
+        _audioSource.Play();
+        yield return new WaitForSeconds(0.8f);
+        _audioSource.clip = _explosionSoundClip;
+        _audioSource.Play();
+        yield return new WaitForSeconds(1.833f);
+        DestroyChildrenGameObjects();
         Destroy(this.GameObject());
+    }
+    
+    private void DestroyChildrenGameObjects()
+    {
+        Transform[] children = transform.GetComponentsInChildren<Transform>();
+        foreach (Transform child in children) {
+            if (child != transform) {
+                Destroy(child.gameObject);
+            }
+        }
     }
 }

@@ -39,10 +39,12 @@ public class Player : MonoBehaviour
         [Header("Thrusters")] 
         [SerializeField] 
         private GameObject _thrustersPreFab;
+        private bool _isThrusterActive;
         
         [Header("Lives")]
         [SerializeField]
         private int _lives = 3;
+        private bool _isPlayerDead;
         
         [Header("Prizes")]
         [SerializeField]
@@ -65,6 +67,7 @@ public class Player : MonoBehaviour
         private GameObject _platerHurtLeft;
         [SerializeField]
         private GameObject _platerHurtRight;
+        private bool _isPlayerHurtActive;
 
         [Header("UI Manager")] [SerializeField]
         private UIManager _uiManager;
@@ -74,12 +77,31 @@ public class Player : MonoBehaviour
         [Header("Spawn Manager")] 
         [SerializeField]
         private SpawnManager _spawnManager;
+
+        [Header("Audio Clips")]
+        [SerializeField]
+        private AudioClip _explosionSoundClip;
+        [SerializeField]
+        private AudioClip _laserSoundClip;
+        private AudioSource _audioSource;
+
+        [Header("Explosion")] 
+        [SerializeField] 
+        private GameObject _explosion;
         #endregion
     
     void Start()
     {
          if ( _spawnManager == null) {
-             Debug.LogError("the Spawn Manager is NUll.");
+             Debug.LogError("The Spawn Manager on Player  is NUll.");
+         }
+
+         _audioSource = this.GetComponent<AudioSource>();
+         if (_audioSource == null){
+             Debug.Log("The Audio Source on Player is NULL.");
+         }
+         else {
+             _audioSource.clip = _laserSoundClip;
          }
          transform.position = new Vector3( 0, -4, 0 );
          PrePopulateLaserPool();
@@ -98,6 +120,9 @@ public class Player : MonoBehaviour
         float horizontalInput = Input.GetAxis("Horizontal");
         float verticalInput = Input.GetAxis("Vertical");
         _inputDirection = new Vector3(horizontalInput, verticalInput, 0);
+        if ((horizontalInput != 0 || verticalInput != 0 ) && !_isThrusterActive) {
+            StartCoroutine(AnimateThrusters());
+        }
 
         // If both a vertical and a horizontal key are pressed together, space is ignored
         // ↑→ works, ↑← fails, ↓→ fails, ↓→ fails
@@ -120,6 +145,7 @@ public class Player : MonoBehaviour
             RetrieveLaserFromPool().transform.position = transform.position + _leftTripleOffset;
             RetrieveLaserFromPool().transform.position = transform.position + _rightTripleOffset;
         }
+        _audioSource.Play();
     }
 
     private void PlayerInBounds() {
@@ -144,23 +170,30 @@ public class Player : MonoBehaviour
     }
 
     public void Damage() {
-        if (!_isShieldActive)  {
-            _lives--;
-            _uiManager.UpdateLives(_lives);
-        }
-        else {
-            _shieldHits++;
-            if (_shieldHits > 3) {
-                _isShieldActive = false;
-                _shieldPrefab.SetActive(false);
-                _shieldHits = 0;
+        if (!_isPlayerDead) {
+            if (!_isShieldActive) {
+                _lives--;
+                _uiManager.UpdateLives(_lives);
             }
-        }
-        
-        if (_lives < 1) {
-            _spawnManager.OnPlayerDeath();
-            _uiManager.GameOver();
-            Destroy(this.gameObject);
+            else {
+                _shieldHits++;
+                if (_shieldHits > 3) {
+                    _isShieldActive = false;
+                    _shieldPrefab.SetActive(false);
+                    _shieldHits = 0;
+                }
+            }
+            if (_lives < 1) {
+                _spawnManager.OnPlayerDeath();
+                _uiManager.GameOver();
+                DestroyChildrenGameObjects();
+                StartCoroutine(AnimateExplosion());
+            }
+            else {
+                if (!_isPlayerHurtActive) {
+                    StartCoroutine(AnimatePlayerHurt());
+                }
+            }
         }
     }
 
@@ -222,6 +255,51 @@ public class Player : MonoBehaviour
         _shieldHits = 0;
     }
     
+    IEnumerator AnimateThrusters()
+    {
+        _isThrusterActive = true;
+        _thrustersPreFab.SetActive(true);
+        yield return new WaitForSeconds(0.5f);
+        _thrustersPreFab.SetActive(false);
+        _isThrusterActive = false;
+    }
+
+    IEnumerator AnimatePlayerHurt()
+    {
+        _isPlayerHurtActive = true;
+        if (Random.Range(0, 1) == 1) {
+            _platerHurtLeft.SetActive(true);
+            yield return new WaitForSeconds(1.85f);
+            _platerHurtLeft.SetActive(false);
+        }
+        else {
+            _platerHurtRight.SetActive(true);
+            yield return new WaitForSeconds(1.85f);
+            _platerHurtRight.SetActive(false);
+        }
+        _isPlayerHurtActive = false;
+    }
+
+    IEnumerator AnimateExplosion()
+    {
+        _isPlayerDead = true;
+        this.GetComponent<SpriteRenderer>().enabled = false;
+        _explosion.SetActive(true);
+        _audioSource.clip = _explosionSoundClip;
+        _audioSource.Play();
+        yield return new WaitForSeconds(2.63f);
+        Destroy(this.gameObject);
+    }
+        
+    private void DestroyChildrenGameObjects()
+    {
+        Transform[] children = transform.GetComponentsInChildren<Transform>();
+        foreach (Transform child in children) {
+            if (child != transform) {
+                Destroy(child.gameObject);
+            }
+        }
+    }
     
     #region LaserPool
     private void PrePopulateLaserPool()  {

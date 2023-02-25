@@ -16,6 +16,12 @@ public class Enemy : MonoBehaviour
     private float _verticalBounds = 5.5f;
     private float _speed = 4f;
     private Player _player;
+    
+    [Header("Audio Clips")]
+    [SerializeField]
+    private AudioSource _audioSource;
+    [SerializeField]
+    private AudioClip _explosionSoundClip;
   #endregion
     
     private void Start() {
@@ -77,9 +83,21 @@ public class Enemy : MonoBehaviour
     IEnumerator DeathSequence() {
         _isDead = true;
         this.GetComponent<SpriteRenderer>().enabled = false;
+        _audioSource.clip = _explosionSoundClip;
+        _audioSource.Play();
         _explosion.SetActive(true);
         yield return new WaitForSeconds(2.633f);
+        DestroyChildrenGameObjects();
         Destroy(this.GameObject());
     }
-
+    
+    private void DestroyChildrenGameObjects()
+    {
+        Transform[] children = transform.GetComponentsInChildren<Transform>();
+        foreach (Transform child in children) {
+            if (child != transform) {
+                Destroy(child.gameObject);
+            }
+        }
+    }
 }

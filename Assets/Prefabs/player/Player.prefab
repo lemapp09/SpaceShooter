@@ -124,7 +124,8 @@ MonoBehaviour:
   _timePrizesLast: 5
   _platerHurtLeft: {fileID: 2644962548417364749}
   _platerHurtRight: {fileID: 464997599167699781}
-  _initialWelcomeScreen: {fileID: 0}
+  _uiManager: {fileID: 0}
+  _spawnManager: {fileID: 0}
 --- !u!61 &1496348151098384730
 BoxCollider2D:
   m_ObjectHideFlags: 0
