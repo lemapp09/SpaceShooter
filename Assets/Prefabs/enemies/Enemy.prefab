@@ -54,6 +54,8 @@ MonoBehaviour:
   _shield: {fileID: 767080208774414425}
   _audioSource: {fileID: 168405579491310939}
   _explosionSoundClip: {fileID: 8300000, guid: da6a177bf30974d46bb722fb5cd602d4, type: 3}
+  _laserSoundClip: {fileID: 8300000, guid: 369d7af9aa8b84ab6b4487566411b5f8, type: 3}
+  _enemyLaserPrefab: {fileID: 9035228446673234701, guid: bff8729a523004a2aa542c3afc6f086c, type: 3}
 --- !u!212 &3832992834675262347
 SpriteRenderer:
   m_ObjectHideFlags: 0

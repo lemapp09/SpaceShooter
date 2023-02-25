@@ -561,6 +561,27 @@ AudioSource:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
+--- !u!50 &106970345
+Rigidbody2D:
+  serializedVersion: 4
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 106970335}
+  m_BodyType: 0
+  m_Simulated: 1
+  m_UseFullKinematicContacts: 0
+  m_UseAutoMass: 0
+  m_Mass: 1
+  m_LinearDrag: 0
+  m_AngularDrag: 0.05
+  m_GravityScale: 0
+  m_Material: {fileID: 0}
+  m_Interpolate: 0
+  m_SleepingMode: 1
+  m_CollisionDetection: 0
+  m_Constraints: 0
 --- !u!1 &134138179
 GameObject:
   m_ObjectHideFlags: 0
@@ -1771,7 +1792,7 @@ MonoBehaviour:
   - {fileID: 5992896873741181371, guid: 355645246349440fcaddc61753294da9, type: 3}
   - {fileID: 5918569062803999266, guid: 3a32da4308ff34c2eb304a2a6e15fa78, type: 3}
   _powerupCycleCount: 1
-  _lengthOfSpawnCycle: 5
+  _lengthOfSpawnCycle: 10
 --- !u!1 &721741844
 GameObject:
   m_ObjectHideFlags: 0

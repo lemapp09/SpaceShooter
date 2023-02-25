@@ -22,6 +22,13 @@ public class Enemy : MonoBehaviour
     private AudioSource _audioSource;
     [SerializeField]
     private AudioClip _explosionSoundClip;
+    [SerializeField]
+    private AudioClip _laserSoundClip;
+
+    
+    [Header("Lasers")]
+    [SerializeField]
+    private GameObject _enemyLaserPrefab;
   #endregion
     
     private void Start() {
@@ -35,8 +42,21 @@ public class Enemy : MonoBehaviour
         if (_shield == null) {
             Debug.Log("Shield is null in enemy");
         }
+
+        StartCoroutine(FireLaser());
     }
-    
+
+    private IEnumerator FireLaser()
+    {
+        while (!_isDead)
+        {
+            Instantiate(_enemyLaserPrefab, this.transform.position, Quaternion.identity);
+            _audioSource.clip = _laserSoundClip;
+            _audioSource.Play();
+            yield return new WaitForSeconds(2f);
+        }
+    }
+
     private void Update()
     {
         MoveEnemyBeyondGameScreen();

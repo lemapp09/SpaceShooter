@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class Player : MonoBehaviour
@@ -120,7 +121,7 @@ public class Player : MonoBehaviour
         float horizontalInput = Input.GetAxis("Horizontal");
         float verticalInput = Input.GetAxis("Vertical");
         _inputDirection = new Vector3(horizontalInput, verticalInput, 0);
-        if ((horizontalInput != 0 || verticalInput != 0 ) && !_isThrusterActive) {
+        if ((horizontalInput != 0 || verticalInput != 0 ) && !_isThrusterActive && !_isPlayerDead) {
             StartCoroutine(AnimateThrusters());
         }
 
@@ -167,6 +168,15 @@ public class Player : MonoBehaviour
         }
 
         transform.position = new Vector3(newPositionX, newPositionY, 0);
+    }
+
+    private void OnTriggerEnter2D(Collider2D other) {
+        if (!_isPlayerDead) {
+            if (other.transform.CompareTag("Enemy Laser")) {
+                Debug.Log("Enemy Laser hit Player");
+                Damage();
+            }
+        }
     }
 
     public void Damage() {
@@ -260,8 +270,10 @@ public class Player : MonoBehaviour
         _isThrusterActive = true;
         _thrustersPreFab.SetActive(true);
         yield return new WaitForSeconds(0.5f);
-        _thrustersPreFab.SetActive(false);
-        _isThrusterActive = false;
+        if (!_isPlayerDead) {
+            _thrustersPreFab.SetActive(false);
+            _isThrusterActive = false;
+        }
     }
 
     IEnumerator AnimatePlayerHurt()
@@ -270,12 +282,16 @@ public class Player : MonoBehaviour
         if (Random.Range(0, 1) == 1) {
             _platerHurtLeft.SetActive(true);
             yield return new WaitForSeconds(1.85f);
-            _platerHurtLeft.SetActive(false);
+            if (!_isPlayerDead)  {
+                _platerHurtLeft.SetActive(false);
+            }
         }
         else {
             _platerHurtRight.SetActive(true);
             yield return new WaitForSeconds(1.85f);
-            _platerHurtRight.SetActive(false);
+            if (!_isPlayerDead) {
+                _platerHurtRight.SetActive(false);
+            }
         }
         _isPlayerHurtActive = false;
     }
