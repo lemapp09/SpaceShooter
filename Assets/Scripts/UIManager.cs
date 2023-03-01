@@ -1,9 +1,8 @@
-using System;
 using System.Collections;
-using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.Serialization;
+using UnityEngine.UI;
 
 public class UIManager : MonoBehaviour
 {
@@ -22,16 +21,30 @@ public class UIManager : MonoBehaviour
     [SerializeField] 
     private TextMeshProUGUI _scoreText;
     [SerializeField] 
+    private TextMeshProUGUI _ammoText;
+    [SerializeField] 
     private TextMeshProUGUI _gameOverText;
     [SerializeField] 
     private TextMeshProUGUI _restartGameText;
     [SerializeField] 
+    private GameObject _numberMOAGText;
+    [SerializeField]
+    private int _moagDisplayCount = 0;
+    [SerializeField] 
     private TextMeshProUGUI _gameWon;
+    [SerializeField] 
+    private Scrollbar _thrusterDurationDisplay;
     
     private GameManager _gameManager;
+    public static UIManager Instance;
   #endregion
+
+  private void Awake() {
+      Instance = this;
+  }
+  
     private void Start() {
-        _gameManager = GameObject.Find("Game_Manager").GetComponent<GameManager>();
+        _gameManager = GameManager.Instance;
         if (_gameManager == null) {
             Debug.Log("UIManger :: Start : GameManager is NULL ");
         }
@@ -39,6 +52,10 @@ public class UIManager : MonoBehaviour
 
     public void UpdateScore(int score) {
         _scoreText.text = "Score: " + score.ToString();
+    }
+
+    public void UpdateAmmo(int ammo) {
+        _ammoText.text = "Ammo: " + ammo.ToString();
     }
 
     public void UpdateLives(int lives)
@@ -70,8 +87,6 @@ public class UIManager : MonoBehaviour
                 _threeLives.SetActive(true);
                 break;
         }
-
-                
     }
 
     public void GameOver() {
@@ -94,10 +109,42 @@ public class UIManager : MonoBehaviour
         _gameWon.enabled = true;
     }
 
-    public void ToggleInputScreen(bool OnOff)
-    {
+    public void ToggleInputScreen(bool OnOff) {
         _inputsScreen.SetActive(OnOff);
     }
-    
 
+    public void DisplayNumberOfMOAGLasersText() {
+        _moagDisplayCount++;
+        if (_moagDisplayCount < 6) {
+            _numberMOAGText.SetActive(true);
+            StartCoroutine(DisplayMOAGOneSec());
+        }
+    }
+
+    public void StartThrusterCoolDown(float _timePrizesLast)
+    {
+        if (_timePrizesLast > 0) {
+            StartCoroutine(ThrusterDisplayCoolDown(_timePrizesLast));
+        }
+    }
+
+    private IEnumerator ThrusterDisplayCoolDown(float _timePrizesLast)
+    {
+        _thrusterDurationDisplay.gameObject.SetActive(true);
+        int i = 0;
+        float size = 1f;
+        while (i < _timePrizesLast * 100) {
+            yield return new WaitForSeconds(0.01f);
+            size -= (1/ (_timePrizesLast * 100));
+            _thrusterDurationDisplay.size = size;
+            i++;
+        }
+        _thrusterDurationDisplay.gameObject.SetActive(false);
+    }
+
+    private IEnumerator DisplayMOAGOneSec()
+    {
+        yield return new WaitForSeconds(1f);
+        _numberMOAGText.SetActive(false);
+    }
 }

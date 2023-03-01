@@ -9,7 +9,7 @@ public class PowerUp : MonoBehaviour
        [SerializeField] 
        private float _speed = 3;
        [SerializeField] 
-       [Tooltip("0 - Triple Shot, 1 - Speed, 2 - Shields")]
+       [Tooltip("0 - Triple Shot, 1 - Speed, 2 - Shields, 3 - MOAG")]
        private int _powerupId = 1;
        [SerializeField]
        private GameObject _explosion;

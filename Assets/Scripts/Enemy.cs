@@ -29,6 +29,8 @@ public class Enemy : MonoBehaviour
     [Header("Lasers")]
     [SerializeField]
     private GameObject _enemyLaserPrefab;
+
+    private int _laserCount = 0;
   #endregion
     
     private void Start() {
@@ -50,7 +52,9 @@ public class Enemy : MonoBehaviour
     {
         while (!_isDead)
         {
-            Instantiate(_enemyLaserPrefab, this.transform.position, Quaternion.identity);
+            GameObject go = Instantiate(_enemyLaserPrefab, this.transform.position, Quaternion.identity);
+            go.name = this.name + "_laser" + _laserCount.ToString("D3");
+            _laserCount++;
             _audioSource.clip = _laserSoundClip;
             _audioSource.Play();
             yield return new WaitForSeconds(2f);

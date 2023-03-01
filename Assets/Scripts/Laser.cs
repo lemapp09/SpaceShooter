@@ -1,3 +1,4 @@
+using System;
 using Unity.VisualScripting;
 using UnityEngine;
 
@@ -28,7 +29,6 @@ public class Laser : MonoBehaviour
         else {
             transform.Translate(Time.deltaTime * _speed * Vector3.up);
         }
-
         RemoveLaserBeyondGameScreen();
     }
 
