@@ -1983,6 +1983,9 @@ MonoBehaviour:
   _enemyPrefab: {fileID: 5185140253996291053, guid: ce96a529d077d41d3a94be698478f5bf, type: 3}
   _powerups:
   - {fileID: 5992896873741181371, guid: 355645246349440fcaddc61753294da9, type: 3}
+  - {fileID: 2743262311439210186, guid: 08bef8ca601f44b50bc347795cb73e54, type: 3}
+  - {fileID: 5918569062803999266, guid: 3a32da4308ff34c2eb304a2a6e15fa78, type: 3}
+  - {fileID: 8799433589466544072, guid: a9ae44ad0eb104fb18ea04bd9eb59628, type: 3}
   _lengthOfEnemySpawnCycle: 5
   _lengthOfPowerupSpawnCycle: 5
   _collectibles:
