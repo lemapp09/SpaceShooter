@@ -52,34 +52,43 @@ public class PowerUp : MonoBehaviour
             Destroy(this.GameObject());
         }
     }
-    
-    private void OnTriggerEnter2D(Collider2D other) {
-        if (!_isDead) {
-            if (other.transform.CompareTag("Player")) {
+
+    private void OnTriggerEnter2D(Collider2D other)
+    {
+        if (!_isDead)
+        {
+            if (other.transform.CompareTag("Player"))
+            {
                 Player player = other.transform.GetComponent<Player>();
-                if (player != null) {
+                if (player != null)
+                {
                     other.transform.GetComponent<Player>().Damage();
                     // 0 - Triple Shot, 1 - Speed, 2 - Shields
                     player.Awards(_powerupId);
                 }
+
                 StartCoroutine(DeathSequence());
             }
 
-            if (other.transform.CompareTag("Laser")) {
+            if (other.transform.CompareTag("Laser"))
+            {
                 Laser laser = other.transform.GetComponent<Laser>();
-                if (laser != null) {
+                if (laser != null)
+                {
 
                     // 0 - Triple Shot, 1 - Speed, 2 - Shields
-                    if (_player != null) {
+                    if (_player != null)
+                    {
                         _player.Awards(_powerupId);
                     }
+
                     other.transform.GetComponent<Laser>().ReturnToPool();
+                    StartCoroutine(DeathSequence());
                 }
-                StartCoroutine(DeathSequence());
             }
         }
     }
-    
+
     IEnumerator DeathSequence() {
         _isDead = true;
         this.GetComponent<SpriteRenderer>().enabled = false;

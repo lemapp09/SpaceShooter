@@ -51,13 +51,14 @@ public class Collectibles : MonoBehaviour
                         _player.Awards(_collectibleId);
                     }
                     other.transform.GetComponent<Laser>().ReturnToPool();
-                }
-                StartCoroutine(DeathSequence());
-            } else if (other.transform.CompareTag("Enemy Laser")) {
-                StartCoroutine(DeathSequence());
-            }  
-        }
+                } else Destroy(other);
+            }
+            StartCoroutine(DeathSequence());
+        } else if (other.transform.CompareTag("EnemyLaser")) {
+            StartCoroutine(DeathSequence());
+        }  
     }
+    
     
     IEnumerator DeathSequence() {
         _isDead = true;

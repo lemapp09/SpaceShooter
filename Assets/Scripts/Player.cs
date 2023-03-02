@@ -216,7 +216,8 @@ public class Player : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D other) {
         if (!_isPlayerDead) {
-            if (other.transform.CompareTag("Enemy Laser")) {
+            if (other.transform.CompareTag("EnemyLaser")) {
+                Destroy(other);
                 Damage();
             }
         }
@@ -430,11 +431,12 @@ public class Player : MonoBehaviour
         return laser;
     }
 
-    public void ReturnLaserPrefabToPool(GameObject laser) {
-        laser.transform.position = Vector3.zero;
-        laser.transform.rotation = Quaternion.Euler(0f, 0f, 0f);
-        laser.SetActive(false);
-        _laserPool.Add(laser);
+    public void ReturnLaserPrefabToPool(GameObject laser)
+    {
+            laser.transform.position = Vector3.zero;
+            laser.transform.rotation = Quaternion.Euler(0f, 0f, 0f);
+            laser.SetActive(false);
+            _laserPool.Add(laser);
     }
     #endregion
 }
