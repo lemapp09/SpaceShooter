@@ -166,26 +166,27 @@ public class Player : MonoBehaviour
     }
 
     private void FireLaser() {
-        if (_ammoCount > 0) {  
-            _ammoCount--;
-            RetrieveLaserFromPool().transform.position = transform.position + _laserLaunchOffset;
-        }
-
-        if (_isTripleShotActive && _ammoCount > 0) {
-            _ammoCount--;
-            RetrieveLaserFromPool().transform.position = transform.position + _leftTripleOffset;
-            RetrieveLaserFromPool().transform.position = transform.position + _rightTripleOffset;
-        }
         if (_isMOAGActive && _ammoCount > 0) {
             _ammoCount--;
             if (_numberOfMOAGLasers > 2) {
                 for (int i = 0; i < _numberOfMOAGLasers; i++) {
                     GameObject go = RetrieveLaserFromPool();
                     go.transform.position = transform.position + _laserLaunchOffset;
-                    float angle = -85 + ((170/(_numberOfMOAGLasers - 1) * i));
+                    float angle = -85 + ((170 / (_numberOfMOAGLasers - 1) * i));
                     go.transform.rotation = Quaternion.Euler(0, 0, angle);
                 }
             }
+        }
+        else if (_isTripleShotActive && _ammoCount > 0) {
+            _ammoCount--;
+            RetrieveLaserFromPool().transform.position = transform.position + _laserLaunchOffset;
+            RetrieveLaserFromPool().transform.position = transform.position + _leftTripleOffset;
+            RetrieveLaserFromPool().transform.position = transform.position + _rightTripleOffset;
+        }
+        else {if (_ammoCount > 0) {  
+            _ammoCount--;
+            RetrieveLaserFromPool().transform.position = transform.position + _laserLaunchOffset;
+            } 
         }
         _audioSource.Play();
         if (_ammoCount < 1) _ammoCount = 0;
